@@ -14,7 +14,7 @@ public class RestaurantMenu implements Serializable {
         dishes = new ArrayList<>(); //ArrayList динамически изменяет размер
     }
 
-    //добавление блюда в меню
+    //добавление блюда в менюю
     public static void addDish(Dish dish) {
         dishes.add(dish);
     }
