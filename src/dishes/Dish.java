@@ -17,6 +17,9 @@ public abstract class Dish implements Serializable {
     //абстрактный метод для отображения информации о блюде
     public abstract void displayInfo();
 
+    //абстрактный метод для получения информации, есть ли аллергены
+    public abstract boolean isAllergenFree();
+
     public String getName() {
         return name;
     }
@@ -48,4 +51,6 @@ public abstract class Dish implements Serializable {
     public void setPrice(int price) {
         this.price = price;
     }
+
+
 }

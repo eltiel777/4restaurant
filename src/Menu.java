@@ -21,7 +21,8 @@ public class Menu {
             System.out.println("4. Поиск блюда по названию");
             System.out.println("5. Сохранить меню в файл");
             System.out.println("6. Загрузить меню из файла");
-            System.out.println("7. Выйти");
+            System.out.println("7. Вывести блюда, подходящие для аллергиков");
+            System.out.println("8. Выйти");
             System.out.print("Ваш выбор: ");
 
             //проверяем, что введено корректное число
@@ -52,20 +53,28 @@ public class Menu {
                     loadFromFile();
                     break;
                 case 7:
+                    System.out.println("Вывод блюд, подходящих для аллергиков:");
+                    for (Dish dish : restaurantMenu.getDishes()) { //перебираем каждый элемент коллекции, который возвращается с помощью get.dishes
+                        if (dish.isAllergenFree()) { //если вернуло true, то
+                            dish.displayInfo(); //показываем только те блюда, которые подходят для аллергиков
+                        }
+                    }
+                    break;
+                case 8:
                     System.out.println("Выход из программы...");
                     break;
                 default:
-                    System.out.println("Ошибка! Введите число от 1 до 7.");
+                    System.out.println("Ошибка! Введите число от 1 до 8.");
                     break;
             }
 
-        } while (choice != 7);
+        } while (choice != 8);
     }
 
     //добавление блюда в меню
     private static void addDish() {
         try {
-            System.out.print("Введите тип блюда (1 - Основное, 2 - Десерт, 3 - Закуска): ");
+            System.out.print("Введите тип блюда (1 - Закуска, 2 - Основное блюдо, 3 - Десерт): ");
             int dishType = -1;
 
             //ввод типа блюда
@@ -91,7 +100,7 @@ public class Menu {
                 if (name.isEmpty())
                 {
                     System.out.println("Ошибка! Название блюда не может быть пустым.");
-                } else if (name.matches("[A-Za-zА-Яа-яЁё\\s]+"))
+                } else if (name.matches("[A-Za-zА-Яа-яЁё\\s]+")) //если содержит подходящие символы
                 {
                     break;
                 } else
@@ -133,26 +142,57 @@ public class Menu {
             }
 
             //создание блюда соответственно его типу
-            Dish dish;
-            switch (dishType) {
-                case 1:
-                    dish = new Appetizer(name, description, calories, price);
-                    break;
-                case 2:
-                    dish = new MainCourse(name, description, calories, price);
-                    break;
-                case 3:
-                    dish = new Dessert(name, description, calories, price);
-                    break;
-                default:
-                    System.out.println("Некорректный тип блюда.");
-                    return;
+            Dish dish = null;
+            try {
+                switch (dishType) {
+                    case 1:
+                        //закуска: содержит ли она орехи
+                        int nutsInput = -1;
+                        while (nutsInput != 0 && nutsInput != 1) {
+                            System.out.print("Содержит ли закуска орехи? (1 - да, 0 - нет): ");
+                            nutsInput = scanner.nextInt();
+                            if (nutsInput != 0 && nutsInput != 1) {
+                                System.out.println("Ошибка: введите 1 или 0.");
+                            }
+                        }
+                        boolean containsNuts = (nutsInput == 1); //если введено 1, то true, иначе false
+                        dish = new Appetizer(name, description, calories, price, containsNuts);
+                        break;
+                    case 2:
+                        //основное блюдо: содержит ли оно глютен
+                        int glutenInput = -1;
+                        while (glutenInput != 0 && glutenInput != 1) {
+                            System.out.print("Содержит ли основное блюдо глютен? (1 - да, 0 - нет): ");
+                            glutenInput = scanner.nextInt();
+                            if (glutenInput != 0 && glutenInput != 1) {
+                                System.out.println("Ошибка: введите 1 или 0.");
+                            }
+                        }
+                        boolean containsGluten = (glutenInput == 1); //если введено 1, то true, иначе false
+                        dish = new MainCourse(name, description, calories, price, containsGluten);
+                        break;
+                    case 3:
+                        //десерт: содержит ли он лактозу
+                        int lactoseInput = -1;
+                        while (lactoseInput != 0 && lactoseInput != 1) {
+                            System.out.print("Содержит ли десерт лактозу? (1 - да, 0 - нет): ");
+                            lactoseInput = scanner.nextInt();
+                            if (lactoseInput != 0 && lactoseInput != 1) {
+                                System.out.println("Ошибка: введите 1 или 0.");
+                            }
+                        }
+                        boolean containsLactose = (lactoseInput == 1); //если введено 1, то true, иначе false
+                        dish = new Dessert(name, description, calories, price, containsLactose);
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Произошла ошибка: " + e.getMessage());  //обработка других ошибок
             }
 
             //добавление блюда в меню
             restaurantMenu.addDish(dish);
             System.out.println("Блюдо добавлено.");
-        } catch (InputMismatchException e) {
+        } catch (InputMismatchException e) { //если ввел не 1 или 0
             System.out.println("Ошибка ввода. Пожалуйста, введите корректные данные.");
             scanner.nextLine(); //очистка буфера
         }
@@ -198,14 +238,15 @@ public class Menu {
         }
     }
 
+    //загрузка из файла
     private static void loadFromFile() {
-        System.out.print("Введите имя файла для загрузки меню (например, menu.txt): ");
+        System.out.print("Введите имя файла для загрузки меню (например, menu.dat): ");
         String fileName = scanner.nextLine();
 
         try {
-            restaurantMenu = FileWork.loadRestaurantMenuFromFile(fileName); // загружаем меню в статический объект
+            restaurantMenu = FileWork.loadRestaurantMenuFromFile(fileName); // Загружаем меню
             System.out.println("Меню загружено из файла: " + fileName);
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка при загрузке меню из файла: " + e.getMessage());
         }
     }

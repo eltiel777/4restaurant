@@ -9,6 +9,67 @@ public class FileWork {
 
     //сохраняем меню в файл
     public static void saveRestaurantMenuToFile(RestaurantMenu menu, String fileName) throws IOException {
+        //открываем поток для записи сериализованных объектов из файла
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            oos.writeObject(menu); //сериализуем объект меню
+            System.out.println("Меню успешно сохранено в файл " + fileName);
+        } catch (IOException e) {
+            throw new IOException("Ошибка при сохранении файла: " + e.getMessage(), e);
+        }
+    }
+
+    //загружаем меню из файла
+    public static RestaurantMenu loadRestaurantMenuFromFile(String fileName) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            RestaurantMenu menu = (RestaurantMenu) ois.readObject(); //десериализуем объект меню
+            System.out.println("Меню успешно загружено из файла " + fileName);
+            return menu;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new IOException("Ошибка при загрузке файла: " + e.getMessage(), e);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    //сохраняем меню в файл
+    public static void saveRestaurantMenuToFile(RestaurantMenu menu, String fileName) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             for (Dish dish : menu.getDishes()) { //перебираем все блюда в меню, каждому блюду переменная dish, ссылается на текущее блюдо в списке
                 String dishText = dishToText(dish);  //преобразуем каждое блюдо в строку
@@ -20,6 +81,8 @@ public class FileWork {
             throw new IOException("Ошибка при сохранении файла: " + e.getMessage(), e);
         }
     }
+
+
 
     //загрузка меню из текстового файла
     public static RestaurantMenu loadRestaurantMenuFromFile(String fileName) throws IOException {
@@ -41,19 +104,19 @@ public class FileWork {
     //преобразование блюда в строку
     private static String dishToText(Dish dish) {
         return String.join(";",
-                dish.getClass().getSimpleName(), //тип блюда (название класса)
-                dish.getName(),                  //название
-                dish.getDescription(),           //описание
-                String.valueOf(dish.getCalories()), //калорийность, преобразование в строку
-                String.valueOf(dish.getPrice())  //цена
+                dish.getClass().getSimpleName(), // Тип блюда
+                dish.getName(),                  // Название
+                dish.getDescription(),           // Описание
+                String.valueOf(dish.getCalories()), // Калории
+                String.valueOf(dish.getPrice())  // Цена
+
         );
     }
 
-    //преобразование строки в блюдо
     private static Dish textToDish(String text) {
-        String[] parts = text.split(";"); //разделяем на части по знаку
-        if (parts.length != 5) {
-            return null; //если строка не соответствует формату 5 частей
+        String[] parts = text.split(";");
+        if (parts.length < 6) { // Учитываем дополнительные атрибуты
+            return null; // Если формат строки неверен, возвращаем null
         }
 
         String type = parts[0];
@@ -61,16 +124,19 @@ public class FileWork {
         String description = parts[2];
         int calories = Integer.parseInt(parts[3]);
         int price = Integer.parseInt(parts[4]);
+        boolean specificAttribute = Boolean.parseBoolean(parts[5]); // Разбираем специфический атрибут
 
+        // Создаём объект напрямую
         switch (type) {
             case "Appetizer":
-                return new Appetizer(name, description, calories, price);
+                return new Appetizer(name, description, calories, price, specificAttribute);
             case "MainCourse":
-                return new MainCourse(name, description, calories, price);
+                return new MainCourse(name, description, calories, price, specificAttribute);
             case "Dessert":
-                return new Dessert(name, description, calories, price);
+                return new Dessert(name, description, calories, price, specificAttribute);
             default:
-                return null;
+                return null; // Если тип неизвестен
         }
-    }
+    } */
+
 }

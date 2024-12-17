@@ -1,47 +1,44 @@
 import java.io.*;
 import java.util.*;
 import dishes.Dish;
-import dishes.Appetizer;
-import dishes.MainCourse;
-import dishes.Dessert;
-
 
 public class RestaurantMenu implements Serializable {
-    private static List<Dish> dishes; //dishes - список объектов типа Dish лист это тип данных для хранения
+    private List<Dish> dishes;
+    //поле - коллекция объектов типа блюд
+    //список блюд принадлежит конкретному объекту
 
     //конструктор создания пустого списка
     public RestaurantMenu() {
-        dishes = new ArrayList<>(); //ArrayList динамически изменяет размер
+        this.dishes = new ArrayList<>(); //ArrayList динамически изменяет размер
     }
 
-    //добавление блюда в менюю
-    public static void addDish(Dish dish) {
+    //добавление блюда в меню
+    public void addDish(Dish dish) {
         dishes.add(dish);
     }
 
     //удаление блюда из меню
-    public static void removeDish(Dish dish) {
+    public void removeDish(Dish dish) {
         dishes.remove(dish);
     }
 
     //поиск блюда по названию
-    public static Dish findDish(String name) {
-        for (int i = 0; i < dishes.size(); i++) {
-            Dish dish = dishes.get(i);  //получаем блюдо этого индекса
-            if (dish.getName().equalsIgnoreCase(name)) { //проверяем соответствие названий
-                return dish;
+    public Dish findDish(String name) {
+        for (int i = 0; i < dishes.size(); i++) {  //перебираем
+            Dish dish = dishes.get(i);            //получаем элемент по индексу
+            if (dish.getName().equalsIgnoreCase(name)) { //проверяем соответствует ли имя
+                return dish; //возвращаем найденное блюдо
             }
         }
-        return null;
+        return null; //возвращаем null, если блюдо не найдено
     }
 
     //отображение самого меню
-    public static void displayMenu() {
+    public void displayMenu() {
         if (dishes.isEmpty()) {
             System.out.println("Меню пусто.");
         } else {
-            for (int i = 0; i < dishes.size(); i++) {
-                Dish dish = dishes.get(i);
+            for (Dish dish : dishes) { //перебираем все эоементы
                 dish.displayInfo();
                 System.out.println("-------------------------");
             }
@@ -49,7 +46,9 @@ public class RestaurantMenu implements Serializable {
     }
 
     //получить список блюд
-    public static List<Dish> getDishes() {
+    public List<Dish> getDishes() {
         return dishes;
     }
 }
+
+

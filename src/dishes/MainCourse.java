@@ -1,10 +1,15 @@
 package dishes;
 
-public class MainCourse extends Dish {
+import java.io.Serializable;
 
-    public MainCourse(String name, String description, int calories, int price) {
+public class MainCourse extends Dish implements Serializable {
+    private boolean containsGluten;
+
+    public MainCourse(String name, String description, int calories, int price, boolean containsGluten) {
         super(name, description, calories, price);
+        this.containsGluten = containsGluten;
     }
+
 
     @Override //переопределение метода из класса-родителя
     public void displayInfo() {
@@ -13,5 +18,12 @@ public class MainCourse extends Dish {
         System.out.println("Описание: " + getDescription());
         System.out.println("Калории: " + getCalories());
         System.out.println("Цена: " + getPrice());
+        System.out.println("Содержит глютен: " + (containsGluten ? "Да" : "Нет"));
+    }
+
+
+    @Override
+    public boolean isAllergenFree() {
+        return !containsGluten; //если не содержит глютен, блюдо подходит для аллергиков, вернет true
     }
 }
